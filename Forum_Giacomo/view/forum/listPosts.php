@@ -7,6 +7,6 @@
 
 <?php
 foreach($posts as $post ){ ?>
-    <p><a href="#"><?= $post ?></a> par <?= $post->getUser() ?></p>
+    <p><?= $post ?> par <?= $post->getUser() ?> le <?= (new DateTime($post->getDatePost()))->format('d/m/Y H:i') ?> </p>
 <?php }
 

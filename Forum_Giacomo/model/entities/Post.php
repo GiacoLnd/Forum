@@ -64,6 +64,12 @@ final class Post extends Entity{
         return $this->datePost;
     }
 
+    public function setDatePost($datePost)
+    {
+        $this->datePost = $datePost;
+
+        return $this;
+    }
 
     /**
      * Get the value of topic
@@ -82,8 +88,20 @@ final class Post extends Entity{
         return $this->user;
     }
 
+    public function setUser($user){
+        $this->user = $user;
+        return $this;
+    }
+
     public function __toString(){
         return $this->content;
     }
+
+
+    /**
+     * Set the value of datePost
+     *
+     * @return  self
+     */ 
 
 }
