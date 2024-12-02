@@ -4,9 +4,9 @@
 ?>
 
 <h1>Liste des posts</h1>
-
+<button><a href="index.php?ctrl=forum&action=addPost&id=<?= $topics->getId() ?>">Ajouter un post</a></button>
 <?php
 foreach($posts as $post ){ ?>
-    <p><?= $post ?> par <?= $post->getUser() ?> le <?= (new DateTime($post->getDatePost()))->format('d/m/Y H:i') ?> </p>
+    <p><?= $post ?> par <strong> <?= $post->getUser() ?> </strong> le <?= $post->getDatePost() ?> </p>
 <?php }
 

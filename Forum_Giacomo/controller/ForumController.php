@@ -59,4 +59,38 @@ class ForumController extends AbstractController implements ControllerInterface{
             ]
         ];
     }
+
+    public function addTopic($id) {
+
+        $topicManager = new TopicManager();
+        $categoryManager = new CategoryManager();
+        $category = $categoryManager->findOneById($id);
+        $addTopics = $topicManager->addTopic();
+
+        return [
+            "view" => VIEW_DIR."forum/addTopic.php",
+            "meta_description" => "Ajoutez un topic : ",
+            "data" => [
+                "addTopics" => $addTopics,
+                "category" => $category
+            ]
+        ];
+    }
+    public function addPost($id) {
+
+        $postManager = new PostManager();
+        $topicManager = new TopicManager();
+        $topic = $topicManager->findOneById($id);
+        $addPost = $postManager->addPost();
+
+        return [
+            "view" => VIEW_DIR."forum/addPost.php",
+            "meta_description" => "Ajoutez un message : ",
+            "data" => [
+                "addPost" => $addPost,
+                "topic" => $topic
+            ]
+        ];
+    }
+    
 }

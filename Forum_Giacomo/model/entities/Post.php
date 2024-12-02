@@ -59,8 +59,7 @@ final class Post extends Entity{
     /**
      * Get the value of datePost
      */ 
-    public function getDatePost()
-    {
+    public function getDatePost(){
         return $this->datePost;
     }
 
@@ -70,6 +69,7 @@ final class Post extends Entity{
 
         return $this;
     }
+
 
     /**
      * Get the value of topic
