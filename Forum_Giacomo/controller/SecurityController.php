@@ -10,80 +10,96 @@ use Model\Managers\UserManager;
 class SecurityController extends AbstractController{
     // contiendra les méthodes liées à l'authentification : register, login et logout
 
-    public function register () {
-   
-    $registerManager = new UserManager();
+public function register() {
+        $registerManager = new UserManager();
+    
+        $nickName = filter_input(INPUT_POST, "nickName", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $mail = filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL);
+        $pass1 = filter_input(INPUT_POST, "pass1", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $pass2 = filter_input(INPUT_POST, "pass2", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $role = 'ROLE_USER';
+    
+        if ($nickName && $mail && $pass1 && $pass2) {
+            $user = $registerManager->findUserByMail($mail);
+    
+            if (!$user) { 
+                if ($pass1 === $pass2 && strlen($pass1) >= 5) {
 
-
-     $nickName= filter_input(INPUT_POST, "nickName", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-     $mail= filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL);
-     $pass1= filter_input(INPUT_POST, "pass1", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-     $pass2= filter_input(INPUT_POST, "pass2", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
-     //Si chaque entrée est remplie
-     if($nickName && $mail && $pass1 && $pass2) {
-
-        $user = $registerManager->findUserByMail($mail);
-        //  demander à la couche modele de vous creer un objet à partir du mail 
-         
-         // var_dump($user);
-
-         if (!$user) {  // Si l'utilisateur n'existe pas
-             if ($pass1 == $pass2 && strlen($pass1) >= 5) {
-                $userData = $registerManager->addUser($user);
-             } 
-         } else {
-             echo "Ce compte existe déjà";
-         }   
-     }
-     
+                    $userData = [
+                        'nickName' => $nickName,
+                        'mail' => $mail,
+                        'password' => $pass1, 
+                        'role' => $role
+                    ];
+                    
+                    $registerManager->addUser($userData);
+                    
+                    $_SESSION['success'] = "Inscription réussie. Vous pouvez maintenant vous connecter.";
+                    header("Location: index.php?ctrl=security&action=login");
+                    exit;
+                } else {
+                    $_SESSION['error'] = "Les mots de passe doivent correspondre et contenir au moins 5 caractères.";
+                    header("Location: index.php?ctrl=security&action=register");
+                    exit;
+                }
+            } else {
+                $_SESSION['error'] = "Un compte avec cet e-mail existe déjà.";
+            }
+        }
 
      return [
          "view" => VIEW_DIR."forum/register.php",
          "meta_description" => "S'inscrire",
-         "data" => [
-            //  "user" => $user
-         ]
      ];
     }
 
-    public function login () {
-        
-        $loginManager = new UserManager();
+    public function login() {
 
-        $mail= filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL);
-        $password= filter_input(INPUT_POST, "password", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
-        if ($mail && $password) {
-                    
-
-            $user = $loginManager->findUserByMail($mail);
-            $dbpass = $loginManager->retrievePassword($mail);
-
-            // est ce que l'utilisateur existe ? 
-            if($user){
-                $hash = $dbpass->getPassword(); 
-                if(password_verify($password, $hash)){
-                    $connected = Session->setUser($user);;
-                    header("location: index.php?ctrl=home"); exit;
+        $mail = filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL);
+        $password = filter_input(INPUT_POST,"password", FILTER_SANITIZE_EMAIL);
+    
+        if ($mail && filter_var($mail, FILTER_VALIDATE_EMAIL) && $password) {
+            $userManager = new UserManager();
+            $user = $userManager->findUserByMail($mail);
+    
+            if ($user) {
+                $dbPassword = $userManager->retrievePassword($mail);
+    
+                if ($dbPassword) {
+                    $dbPass = $dbPassword->getPassword();
+    
+                    if (password_verify($password, $dbPass)) {
+                        Session::setUser($user);
+    
+                        header("Location: index.php?ctrl=home");
+                        exit;
+                    } else {
+                        $_SESSION['error'] = "Mot de passe incorrect.";
+                    }
                 } else {
-                    header("location: index.php?ctrl=security&action=login"); exit;
+                    $_SESSION['error'] = "Erreur lors de la récupération du mot de passe.";
                 }
             } else {
-                echo "L'utilisateur n'existe pas !";
+                $_SESSION['error'] = "Aucun utilisateur trouvé avec cet e-mail.";
             }
+        } else {
+            $_SESSION['error'] = "Veuillez fournir un e-mail et un mot de passe valides.";
         }
-
+    
         return [
-            "view" => VIEW_DIR."forum/login.php",
-            "meta_description" => "Se connecter",
-            "data" => [
-                "user" => $loginManager
-            ]
+            "view" => VIEW_DIR . "forum/login.php",
+            "meta_description" => "Se connecter"
         ];
     }
-
-    public function logout () {
-        
+    
+    public function logout() {
+        if (isset($_SESSION['user'])) {
+            unset($_SESSION['user']);
+        }
+        header("Location: index.php?ctrl=home");
+        return [
+            "view" => VIEW_DIR . "forum/home.php",
+            "meta_description" => "Déconnexion",
+        ];
     }
 }

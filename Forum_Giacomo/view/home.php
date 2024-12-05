@@ -4,7 +4,7 @@
 
 <p>
     <?php if(isset($_SESSION["user"])){?>
-        <a href="traitement.php?action=logout">Deconnexion</a>
+        <a href="index.php?ctrl=security&action=logout">Deconnexion</a>
         <a href="traitement.php?action=profil">Profil</a>
     <?php } else { ?> 
         <a href="index.php?ctrl=security&action=login">Connexion</a> 

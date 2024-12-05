@@ -24,23 +24,16 @@ class UserManager extends Manager{
         }
 
     public function addUser($data){
-        $nickName= filter_input(INPUT_POST, "nickName", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $mail= filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL);
-        $pass1= filter_input(INPUT_POST, "pass1", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $pass2= filter_input(INPUT_POST, "pass2", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
-
             // Définition de la table cible -> topic
         $this->tableName = 'user'; 
         $userData = [
-                'nickName' => $nickName,
-                'mail' => $mail,
-                'dateInscription' => date('Y-m-d H:i:s'),
-                'password' => $pass1,
-                'role' => 'MEMBRE'
+            'nickName' => $data['nickName'],
+            'mail' => $data['mail'],
+            'dateInscription' => date('Y-m-d H:i:s'),
+            'password' => password_hash($data['password'], PASSWORD_DEFAULT),
+            'role' => 'ROLE_USER'
             ];
 
-            // Insertion du topic et récupération de l'id du topic dans la variable $topicId
             $userData = $this->add($userData); 
     }
 

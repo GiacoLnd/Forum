@@ -136,12 +136,8 @@ final class User extends Entity{
         return $this;
     }
 
-    public function hasRole($role){
-     return true;
-}
+//     public function hasRole($role){
+//      return true;
+// }
 
-    public function __toString() {
-        return $this->nickName;
-    }
-    
 };
