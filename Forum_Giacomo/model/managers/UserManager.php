@@ -4,7 +4,6 @@ namespace Model\Managers;
 use App\Manager;
 use App\DAO;
 
-
 class UserManager extends Manager{
 
     // on indique la classe POO et la table correspondante en BDD pour le manager concerné
@@ -37,17 +36,21 @@ class UserManager extends Manager{
                 'nickName' => $nickName,
                 'mail' => $mail,
                 'dateInscription' => date('Y-m-d H:i:s'),
-                'password' => $pass1
+                'password' => $pass1,
+                'role' => 'MEMBRE'
             ];
 
             // Insertion du topic et récupération de l'id du topic dans la variable $topicId
             $userData = $this->add($userData); 
     }
-    public function getPassword($mail){
-        $sql = "SELECT u.password
-                FROM user u
-                where u.mail = :mail";
-        return DAO::select($sql, ['mail' => $mail]);
+
+    public function retrievePassword($mail){
+        $sql = "SELECT *
+                FROM ". $this->tableName ." a
+                WHERE a.mail = :mail";
+        
+        return $this->getOneOrNullResult(
+            DAO::select($sql, ['mail' => $mail], false), $this->className);
     }
 }
 

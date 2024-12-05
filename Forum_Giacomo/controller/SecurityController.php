@@ -31,7 +31,7 @@ class SecurityController extends AbstractController{
          if (!$user) {  // Si l'utilisateur n'existe pas
              if ($pass1 == $pass2 && strlen($pass1) >= 5) {
                 $userData = $registerManager->addUser($user);
-             }
+             } 
          } else {
              echo "Ce compte existe déjà";
          }   
@@ -58,17 +58,16 @@ class SecurityController extends AbstractController{
                     
 
             $user = $loginManager->findUserByMail($mail);
+            $dbpass = $loginManager->retrievePassword($mail);
 
             // est ce que l'utilisateur existe ? 
             if($user){
-                $hash = $loginManager->getPassword($mail); 
+                $hash = $dbpass->getPassword(); 
                 if(password_verify($password, $hash)){
                     $connected = Session->setUser($user);;
                     header("location: index.php?ctrl=home"); exit;
-                    echo "vous êtes connecté";
                 } else {
                     header("location: index.php?ctrl=security&action=login"); exit;
-                    echo "vous n'êtes pas connecté";
                 }
             } else {
                 echo "L'utilisateur n'existe pas !";
