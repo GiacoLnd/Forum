@@ -139,8 +139,9 @@ final class User extends Entity{
     public function __tostring(){
         return $this->nickName;
     }
-//     public function hasRole($role){
-//      return true;
-// }
+    public function hasRole($role) :bool   {
+        // Vérifie si le rôle spécifié est présent dans le tableau des rôles de l'utilisateur
+        return $this->role == $role;
+    }
 
 };

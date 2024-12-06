@@ -3,18 +3,16 @@ namespace Model\Entities;
 
 use App\Entity;
 
-/*
-    En programmation orientée objet, une classe finale (final class) est une classe que vous ne pouvez pas étendre, c'est-à-dire qu'aucune autre classe ne peut hériter de cette classe. En d'autres termes, une classe finale ne peut pas être utilisée comme classe parente.
-*/
+
 
 final class Topic extends Entity{
 
     private $id;
     private $title;
-    private $user;
+    private $user_id;
     private $category;
     private $creationDate;
-    private $closed;
+    private $lock;
 
     public function __construct($data){         
         $this->hydrate($data);        
@@ -54,26 +52,6 @@ final class Topic extends Entity{
         return $this;
     }
 
-    /**
-     * Get the value of user
-     */ 
-    public function getUser(){
-        return $this->user;
-    }
-
-    /**
-     * Set the value of user
-     *
-     * @return  self
-     */ 
-    public function setUser($user){
-        $this->user = $user;
-        return $this;
-    }
-
-    public function __toString(){
-        return $this->title;
-    }
 
     /**
      * Get the value of creationDate
@@ -93,5 +71,64 @@ final class Topic extends Entity{
         $this->creationDate = $creationDate;
 
         return $this;
+    }
+
+
+    /**
+     * Get the value of category
+     */ 
+
+
+    /**
+     * Get the value of category_id
+     */ 
+
+
+    /**
+     * Get the value of category
+     */ 
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * Set the value of category
+     *
+     * @return  self
+     */ 
+    public function setCategory($category)
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of user_id
+     */ 
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
+     * Set the value of user_id
+     *
+     * @return  self
+     */ 
+    public function setUserId($user_id)
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function isLocked(): bool {
+        return $this->lock == 1;
+    }
+
+    public function __toString(){
+        return $this->title;
     }
 }

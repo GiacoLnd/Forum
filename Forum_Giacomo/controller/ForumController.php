@@ -92,5 +92,19 @@ class ForumController extends AbstractController implements ControllerInterface{
             ]
         ];
     }
-    
+
+    public function lockTopic($id) {
+
+        $topicId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+        $topicManager = new TopicManager();
+        $lockSuccess = $topicManager->lockTopic($id);
+        $getTopic = $topicManager->findTopicById($id);
+
+        if ($lockSuccess) {
+            // Redirection après le verrouillage
+            header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=" . $_GET['category_Id']);
+            exit;
+        }
+    }
 }
