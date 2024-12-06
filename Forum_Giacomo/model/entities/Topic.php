@@ -9,10 +9,12 @@ final class Topic extends Entity{
 
     private $id;
     private $title;
-    private $user_id;
+    private $user;
     private $category;
     private $creationDate;
     private $lock;
+    private $category_id;
+    private $userId;
 
     public function __construct($data){         
         $this->hydrate($data);        
@@ -103,27 +105,64 @@ final class Topic extends Entity{
 
         return $this;
     }
+    
+    
+    
+        /**
+         * Get the value of user
+         */ 
+        public function getUser()
+        {
+            return $this->user;
+        }
+    
+        /**
+         * Set the value of user
+         *
+         * @return  self
+         */ 
+        public function setUser($user)
+        {
+            $this->user = $user;
+    
+            return $this;
+        }
+    
 
+    public function getLock()
+    {
+        return $this->lock;
+    }
+    
+    
+    public function setLock($lock)
+    {
+        $this->lock = $lock;
+        
+        return $this;
+    }
+    
     /**
-     * Get the value of user_id
+     * Get the value of userId
      */ 
     public function getUserId()
     {
-        return $this->user_id;
+        return $this->userId;
     }
-
+    
     /**
-     * Set the value of user_id
+     * Set the value of userId
      *
      * @return  self
      */ 
-    public function setUserId($user_id)
+    public function setUserId($userId)
     {
-        $this->user_id = $user_id;
-
+        $this->userId = $userId;
+        
         return $this;
     }
 
+    
     public function isLocked(): bool {
         return $this->lock == 1;
     }
@@ -131,4 +170,7 @@ final class Topic extends Entity{
     public function __toString(){
         return $this->title;
     }
+
+
+
 }

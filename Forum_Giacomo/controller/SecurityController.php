@@ -92,7 +92,7 @@ public function register() {
             "meta_description" => "Se connecter"
         ];
     }
-    
+    // Fonction de deconnexion gardant les infos user coté serveur mais les supprimant de la session
     public function logout() {
         if (isset($_SESSION['user'])) {
             unset($_SESSION['user']);
@@ -103,6 +103,7 @@ public function register() {
             "meta_description" => "Déconnexion",
         ];
     }
+    //fonction récupérant les infos de profil
     public function profile(){
         $user = $_SESSION['user'][0];
         return [

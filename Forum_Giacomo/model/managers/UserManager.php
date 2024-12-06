@@ -14,7 +14,7 @@ class UserManager extends Manager{
         parent::connect();
     }
 
-        
+     //Retourne l'utilisateur correspondant au mail fourni   
     public  function findUserByMail($mail){
         $sql = "SELECT *
                 FROM user
@@ -22,7 +22,7 @@ class UserManager extends Manager{
 
     return DAO::select($sql, ['mail' => $mail]);
     }
-
+    // Fonction d'inscription d'utilisateur 
     public function addUser($data){
         // Définition de la table cible -> topic
         $this->tableName = 'user'; 
@@ -36,7 +36,7 @@ class UserManager extends Manager{
 
         $this->add($userData); 
     }
-
+    //Fonction de récupération du mot de passe d'un utilisateur
     public function retrievePassword($mail){
         $sql = "SELECT *
                 FROM ". $this->tableName ." a

@@ -6,6 +6,7 @@ use App\DAO;
 use App\Session;
 use Model\Entities\User;
 use Model\Entities\Category;
+use Model\Entities\Topic;
 class TopicManager extends Manager{
 
     // on indique la classe POO et la table correspondante en BDD pour le manager concerné
@@ -30,7 +31,7 @@ class TopicManager extends Manager{
             $this->className
         );
     }
-
+    // récupère les topics par leur id
     public function findTopicById($id){
         $sql = "
             SELECT t.*, 
@@ -38,8 +39,8 @@ class TopicManager extends Manager{
                    u.id_user AS user_id, u.nickName AS user_name
 
             FROM ".$this->tableName." t
-            LEFT JOIN category c ON t.category_id = c.id_category
-            LEFT JOIN user u ON t.user_id = u.id_user
+            INNER JOIN category c ON t.category_id = c.id_category
+            INNER JOIN user u ON t.user_id = u.id_user
             WHERE t.id_topic = :id_topic";
     
         $result = DAO::select($sql, ['id_topic' => $id], false);
@@ -47,13 +48,29 @@ class TopicManager extends Manager{
        
         return $this->getOneOrNullResult($result, $this->className);
     }
-
+    //fonction qui retourne l'id de la catégorie par son id de topic
+    public function getCategoryIdByTopicId(int $topicId): ?int {
+        $sql = "SELECT category_id
+                FROM topic
+                WHERE id_topic = :id_topic";
+    
+        $result = DAO::select($sql, ['id_topic' => $topicId], false);
+    
+        if ($result && isset($result['category_id'])) {
+            return (int) $result['category_id'];
+        }
+    
+        return null; // Retourne null si aucun résultat trouvé
+    }
+    
+    //fonction qui retourne l'id du user par son id de topic
     public function getTopicCreator($id) {
         $sql = "SELECT user_id 
                 FROM ".$this->tableName." t 
                 WHERE t.id_topic = :id_topic";
         return DAO::select($sql, ['id_topic' => $id]);
     }
+    // fonction qui retourne l'id de la catégorie par son id de topic
     public function getTopicCategory($id) {
         $sql = "SELECT category_id 
                 FROM ".$this->tableName." t 
@@ -61,10 +78,10 @@ class TopicManager extends Manager{
                 
                 $result = DAO::select($sql, ['id_topic' => $id], false);
 
-                // Vérifie et retourne directement l'ID de la catégorie
+                
                 return $result ? (int) $result['category_id'] : null;
     }
-    
+    //fonction d'ajout de topic dans une catégorie
     public function addTopic(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $title = filter_input(INPUT_POST, "title", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -95,7 +112,7 @@ class TopicManager extends Manager{
                 'datePost' => date('Y-m-d H:i:s')
             ];
         
-
+            //ajoute le resultat de la requete SQL 
             $this->add($messageData); 
             
 
@@ -103,45 +120,12 @@ class TopicManager extends Manager{
             exit;
         }
     }
-    public function lockTopic(int $id): void {
-        $user = new User($_SESSION['user'][0]);
-    
-
-        $categoryId = $this->getTopicCategory($id);
-        if (!$categoryId) {
-            $_SESSION['error'] = "La catégorie associée au topic est introuvable.";
-            header("Location: index.php?ctrl=forum&action=listCategories");
-            exit;
-        }
-    
-        
-        $topic = $this->findTopicById($id);
-        if (!$topic) {
-            $_SESSION['error'] = "Le topic spécifié est introuvable.";
-            header("Location: index.php?ctrl=forum&action=listCategories");
-            exit;
-        }
-    
-        if ($user->hasRole('ROLE_ADMIN') || $user->getId() === $topic->getUserId()) {
-
-            $newLockState = $topic->isLocked() ? 0 : 1;
-    
-
-            $sql = "UPDATE topic SET lock = :lockState WHERE id_topic = :id_topic";
-            DAO::update($sql, ['lockState' => $newLockState, 'id_topic' => $id]);
-    
-
-            $_SESSION['success'] = $newLockState ? "Le topic a été verrouillé." : "Le topic a été déverrouillé.";
-    
-
-            header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=" . $categoryId);
-            exit;
-        }
-    
-
-        $_SESSION['error'] = "Vous n'êtes pas autorisé à modifier l'état de ce topic.";
-        header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=" . $categoryId);
-        exit;
+    //fonction qui permet de verrouiller et déverrouiller un topic 
+    public function toggleLockState(int $id, bool $newLockState): void {
+        $sql = "UPDATE topic SET `lock` = :lockState WHERE id_topic = :id_topic";
+        DAO::update($sql, [
+            'lockState' => $newLockState ? 1 : 0,
+            'id_topic' => $id
+        ]);
     }
-
 }

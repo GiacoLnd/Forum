@@ -14,7 +14,7 @@ class PostManager extends Manager{
         parent::connect();
     }
 
-    // récupérer tous les topics d'une catégorie spécifique (par son id)
+    // récupère tous les topics d'une catégorie
     public function findPostByTopic($id) {
 
         $sql = "SELECT p.id_post, p.content, DATE_FORMAT(p.datePost, '%d/%m/%Y %H:%i') AS datePost, p.topic_id, p.user_id
@@ -22,31 +22,34 @@ class PostManager extends Manager{
                 WHERE p.topic_id = :id
                 ORDER BY p.datePost DESC";
        
-        // la requête renvoie plusieurs enregistrements --> getMultipleResults
+
         return  $this->getMultipleResults(
             DAO::select($sql, ['id' => $id]), 
             $this->className
         );
     }
-
-    public function addPost() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            
-            $content = htmlspecialchars(trim($_POST['content']), ENT_QUOTES, 'UTF-8');
-            $userId = $_SESSION['user'][0]['id_user'];
-            $topicId = intval($_GET['id']); 
-
-                // Définition de la table cible -> post
-                $this->tableName = 'post'; 
-                $topicData = [
-                    'content' => $content,
-                    'user_id' => $userId,
-                    'datePost' => date('Y-m-d H:i:s'),
-                    'topic_id' => $topicId
-                ];
-
-                $this->add($topicData);
-                header("Location: index.php?ctrl=forum&action=listPostInTopic&id=$topicId");
+    // Fonction qui ajoute un post dans un topic
+    public function addPost(array $data): void {
+        $topicManager = new TopicManager();
+        $topic = $topicManager->findTopicById($data['topic_id']);
+    
+        // Vérifie si le topic est verrouillé avec fonction isLocked() -> empêche d'écrire un post si topic fermé
+        if ($topic->isLocked()) {
+            $_SESSION['error'] = "Ce topic est verrouillé. Vous ne pouvez pas y ajouter de message.";
+            header("Location: index.php?ctrl=forum&action=listPostInTopic&id=" . $data['topic_id']);
+            exit;
         }
-    }    
+
+        $this->tableName = 'post';
+        $this->add([
+            'content' => $data['content'],
+            'user_id' => $data['user_id'],
+            'datePost' => date('Y-m-d H:i:s'),
+            'topic_id' => $data['topic_id']
+        ]);
+    
+        $_SESSION['success'] = "Votre message a bien été ajouté.";
+        header("Location: index.php?ctrl=forum&action=listPostInTopic&id=" . $data['topic_id']);
+        exit;
+    }
 }

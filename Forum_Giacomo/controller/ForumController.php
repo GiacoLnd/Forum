@@ -7,6 +7,7 @@ use App\ControllerInterface;
 use Model\Managers\CategoryManager;
 use Model\Managers\TopicManager;
 use Model\Managers\PostManager;
+use Model\Entities\User;
 
 class ForumController extends AbstractController implements ControllerInterface{
 
@@ -26,7 +27,7 @@ class ForumController extends AbstractController implements ControllerInterface{
             ]
         ];
     }
-
+    //Liste les topics par catégorie
     public function listTopicsByCategory($id) {
 
         $topicManager = new TopicManager();
@@ -43,6 +44,7 @@ class ForumController extends AbstractController implements ControllerInterface{
             ]
         ];
     }
+    //Liste les post dans les topics
     public function listPostInTopic($id) {
 
         $postManager = new PostManager();
@@ -59,7 +61,7 @@ class ForumController extends AbstractController implements ControllerInterface{
             ]
         ];
     }
-
+    //Fonction qui récupère le manager pour ajouter un topic dans une catégorie
     public function addTopic($id) {
 
         $topicManager = new TopicManager();
@@ -76,35 +78,88 @@ class ForumController extends AbstractController implements ControllerInterface{
             ]
         ];
     }
-    public function addPost($id) {
-
-        $postManager = new PostManager();
+    //Fonction qui ajoute un post dans un topic
+    public function addPost($id): array {
         $topicManager = new TopicManager();
-        $topic = $topicManager->findOneById($id);
-        $addPost = $postManager->addPost();
-
+        $postManager = new PostManager();
+    
+        // Filtrage de l'ID en URL pour éviter sa manipulation par l'utilisateur
+        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    
+        if (!$id) {
+            $_SESSION['error'] = "ID de topic invalide ou manquant.";
+            header("Location: index.php?ctrl=forum&action=listCategories");
+            exit;
+        }
+    
+        // récupération du topic par son ID
+        $topic = $topicManager->findTopicById($id);
+    
+        if (!$topic) {
+            $_SESSION['error'] = "Le topic spécifié est introuvable.";
+            header("Location: index.php?ctrl=forum&action=listCategories");
+            exit;
+        }
+    
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    
+            if (!$content) {
+                $_SESSION['error'] = "Le contenu du message est vide.";
+                header("Location: index.php?ctrl=forum&action=addPost&id=" . $id);
+                exit;
+            }
+    
+            // Récupère la session du user 
+            $userId = $_SESSION['user'][0]['id_user'];
+    
+            // Appel de la méthode du manager pour ajouter le message
+            $postManager->addPost([
+                'content' => $content,
+                'user_id' => $userId,
+                'topic_id' => $id
+            ]);
+        }
+    
         return [
-            "view" => VIEW_DIR."forum/addPost.php",
+            "view" => VIEW_DIR . "forum/addPost.php",
             "meta_description" => "Ajoutez un message : ",
             "data" => [
-                "addPost" => $addPost,
                 "topic" => $topic
             ]
         ];
     }
 
-    public function lockTopic($id) {
+    //Fonction qui permet de verrouiller et déverouiller un topic par son créateur ou un admin
+ public function toggleLock(int $id): void {
 
-        $topicId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    $user = new User($_SESSION['user'][0]);
 
-        $topicManager = new TopicManager();
-        $lockSuccess = $topicManager->lockTopic($id);
-        $getTopic = $topicManager->findTopicById($id);
+    // Récupère les informations du topic
+    $categoryManager = new CategoryManager();
+    $category = $categoryManager->findOneById($id);
+    $categoryId = $category->getId();
+    
+    $topicManager = new TopicManager();
+    $topic = $topicManager->findTopicById($id);
+    //récupère l'id de la catégorie
+    $categoryId = $topicManager->getCategoryIdByTopicId($id);
 
-        if ($lockSuccess) {
-            // Redirection après le verrouillage
-            header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=" . $_GET['category_Id']);
-            exit;
-        }
+    // Vérifie si l'utilisateur est autorisé à intéragir (admin ou créateur)
+    if (!$user->hasRole('ROLE_ADMIN') && $user->getId() !== $topic->getUserId()) {
+        $_SESSION['error'] = "Vous n'êtes pas autorisé à modifier ce topic.";
+        header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=" . $topic->getCategoryId());
+        exit;
     }
+
+    // Basculer l'état de verrouillage via le manager
+    $topicManager->toggleLockState($id, !$topic->isLocked());
+
+    //Message de confirmation en cas de succès
+    $_SESSION['success'] = $topic->isLocked() ? "Le topic a été déverrouillé." : "Le topic a été verrouillé.";
+
+    // Redirection après succès
+    header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=". $categoryId);
+    exit;
 }
+    }
