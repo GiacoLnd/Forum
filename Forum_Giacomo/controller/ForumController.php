@@ -131,24 +131,30 @@ class ForumController extends AbstractController implements ControllerInterface{
     }
 
     //Fonction qui permet de verrouiller et déverouiller un topic par son créateur ou un admin
- public function toggleLock(int $id): void {
+ public function toggleLock(int $id) {
 
     $user = new User($_SESSION['user'][0]);
-
-    // Récupère les informations du topic
-    $categoryManager = new CategoryManager();
-    $category = $categoryManager->findOneById($id);
-    $categoryId = $category->getId();
     
     $topicManager = new TopicManager();
     $topic = $topicManager->findTopicById($id);
+    // var_dump($topic);die;
     //récupère l'id de la catégorie
-    $categoryId = $topicManager->getCategoryIdByTopicId($id);
+    
+    // Récupère les informations du topic
+    $categoryManager = new CategoryManager();
+    $category = $categoryManager->findOneById($id);
 
+    $categoryId = $topicManager->getCategoryIdByTopicId($id);
+    
+    if (!$topic) {
+        $_SESSION['error'] = "Le topic spécifié est introuvable.";
+        header("Location: index.php?ctrl=forum&action=listCategories");
+        exit;
+    }
     // Vérifie si l'utilisateur est autorisé à intéragir (admin ou créateur)
     if (!$user->hasRole('ROLE_ADMIN') && $user->getId() !== $topic->getUserId()) {
         $_SESSION['error'] = "Vous n'êtes pas autorisé à modifier ce topic.";
-        header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=" . $topic->getCategoryId());
+        header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=" . $categoryId);
         exit;
     }
 

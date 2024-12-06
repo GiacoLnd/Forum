@@ -39,8 +39,8 @@ class TopicManager extends Manager{
                    u.id_user AS user_id, u.nickName AS user_name
 
             FROM ".$this->tableName." t
-            INNER JOIN category c ON t.category_id = c.id_category
-            INNER JOIN user u ON t.user_id = u.id_user
+            LEFT JOIN category c ON t.category_id = c.id_category
+            LEFT JOIN user u ON t.user_id = u.id_user
             WHERE t.id_topic = :id_topic";
     
         $result = DAO::select($sql, ['id_topic' => $id], false);
