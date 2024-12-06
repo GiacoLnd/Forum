@@ -15,16 +15,16 @@ class UserManager extends Manager{
     }
 
         
-        public  function findUserByMail($mail){
-            $sql = "SELECT *
-                    FROM user
-                    WHERE mail = :mail";
+    public  function findUserByMail($mail){
+        $sql = "SELECT *
+                FROM user
+                WHERE mail = :mail";
 
-        return DAO::select($sql, ['mail' => $mail]);
-        }
+    return DAO::select($sql, ['mail' => $mail]);
+    }
 
     public function addUser($data){
-            // Définition de la table cible -> topic
+        // Définition de la table cible -> topic
         $this->tableName = 'user'; 
         $userData = [
             'nickName' => $data['nickName'],
@@ -34,7 +34,7 @@ class UserManager extends Manager{
             'role' => 'ROLE_USER'
             ];
 
-            $userData = $this->add($userData); 
+        $this->add($userData); 
     }
 
     public function retrievePassword($mail){

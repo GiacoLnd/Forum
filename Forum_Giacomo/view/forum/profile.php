@@ -1,7 +1,12 @@
 <h1>Mon profil</h1>
-    <?php if(isset($_SESSION["user"])){
-        $infoSession = $_SESSION["user"];
-    }?>
-    <p>pseudo : <?php $infoSession["nickName"] ?></p>
-    <p>Email : <?php $infoSession["mail"] ?></p>
-    <p>Date de création du profil : <?php $infoSession["dateInscription"] ?></p>
+<?php
+if (isset($_SESSION["user"])): 
+?>
+    <p>Pseudo : <?= $_SESSION["user"][0]['nickName'] ?></p>
+    <p>Email : <?= $_SESSION["user"][0]['mail'] ?></p>
+    <p>Date de création du profil : <?= $_SESSION["user"][0]['dateInscription'] ?></p>
+<?php 
+else: 
+?>
+    <p>Vous n'êtes pas connecté. <a href="index.php?ctrl=security&action=login">Connectez-vous</a>.</p>
+<?php endif; ?>

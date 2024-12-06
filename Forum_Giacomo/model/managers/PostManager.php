@@ -33,7 +33,7 @@ class PostManager extends Manager{
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $content = htmlspecialchars(trim($_POST['content']), ENT_QUOTES, 'UTF-8');
-            $userId = 1; 
+            $userId = $_SESSION['user'][0]['id_user'];
             $topicId = intval($_GET['id']); 
 
                 // Définition de la table cible -> post

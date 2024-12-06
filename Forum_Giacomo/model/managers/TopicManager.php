@@ -32,41 +32,40 @@ class TopicManager extends Manager{
     
     public function addTopic(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            
-            // Récupération des données du formulaire
-            $title = htmlspecialchars(trim($_POST['title']), ENT_QUOTES, 'UTF-8');
-            $content = htmlspecialchars(trim($_POST['content']), ENT_QUOTES, 'UTF-8');
-            $userId = 1; // ID fixe - Connexion encore inexistante
+            $title = filter_input(INPUT_POST, "title", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $content = filter_input(INPUT_POST, "content", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        
+            $userId = $_SESSION['user'][0]['id_user']; // Récupération du id_user dans la session du user connecté
+        
             $categoryId = intval($_GET['id']); // Récupère l'id de l'URL et force en int
-
-                // Définition de la table cible -> topic
-                $this->tableName = 'topic'; 
-                $topicData = [
-                    'title' => $title,
-                    'user_id' => $userId,
-                    'creationDate' => date('Y-m-d H:i:s'),
-                    'category_id' => $categoryId
-                ];
-
-                // Insertion du topic et récupération de l'id du topic dans la variable $topicId
-                $topicId = $this->add($topicData); 
-
-
-                //Définition de la table cible -> post
-                $this->tableName = 'post'; 
-                $messageData = [
-                    'content' => $content,
-                    'topic_id' => $topicId,
-                    'user_id' => $userId,
-                    'datePost' => date('Y-m-d H:i:s')
-                ];
-
-                //Insertion de la partie content dans la table post
-                $this->add($messageData); 
-                
-                //Redirection vers la liste des topics de la catégorie
-                header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=$categoryId");
-        } 
+        
+            // Définition de la table cible -> topic
+            $this->tableName = 'topic'; 
+            $topicData = [
+                'title' => $title,
+                'user_id' => $userId,
+                'creationDate' => date('Y-m-d H:i:s'),
+                'category_id' => $categoryId
+            ];
+        
+            // Insertion du topic et récupération de l'id du topic dans la variable $topicId
+            $topicId = $this->add($topicData); 
+        
+            // Définition de la table cible -> post
+            $this->tableName = 'post'; 
+            $messageData = [
+                'content' => $content,
+                'topic_id' => $topicId,
+                'user_id' => $userId,
+                'datePost' => date('Y-m-d H:i:s')
+            ];
+        
+            // Insertion de la partie content dans la table post
+            $this->add($messageData); 
+            
+            // Redirection vers la liste des topics de la catégorie
+            header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=$categoryId");
+            exit;
+        }
     }
-    
 }

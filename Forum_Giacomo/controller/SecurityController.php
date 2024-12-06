@@ -11,14 +11,17 @@ class SecurityController extends AbstractController{
     // contiendra les méthodes liées à l'authentification : register, login et logout
 
 public function register() {
-        $registerManager = new UserManager();
-    
+    // initialisation du manager    
+    $registerManager = new UserManager();
+
+        // récupération des données du formulaire
         $nickName = filter_input(INPUT_POST, "nickName", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $mail = filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL);
         $pass1 = filter_input(INPUT_POST, "pass1", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $pass2 = filter_input(INPUT_POST, "pass2", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $role = 'ROLE_USER';
-    
+
+        //Si les entrées sont correctement remplies
         if ($nickName && $mail && $pass1 && $pass2) {
             $user = $registerManager->findUserByMail($mail);
     
@@ -31,7 +34,7 @@ public function register() {
                         'password' => $pass1, 
                         'role' => $role
                     ];
-                    
+                    //utilisation de la fonction addUser incluant les data précédemment récupérées et définies
                     $registerManager->addUser($userData);
                     
                     $_SESSION['success'] = "Inscription réussie. Vous pouvez maintenant vous connecter.";
@@ -58,7 +61,7 @@ public function register() {
         $mail = filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL);
         $password = filter_input(INPUT_POST,"password", FILTER_SANITIZE_EMAIL);
     
-        if ($mail && filter_var($mail, FILTER_VALIDATE_EMAIL) && $password) {
+        if ($mail && $password) {
             $userManager = new UserManager();
             $user = $userManager->findUserByMail($mail);
     
@@ -82,8 +85,6 @@ public function register() {
             } else {
                 $_SESSION['error'] = "Aucun utilisateur trouvé avec cet e-mail.";
             }
-        } else {
-            $_SESSION['error'] = "Veuillez fournir un e-mail et un mot de passe valides.";
         }
     
         return [
@@ -102,4 +103,16 @@ public function register() {
             "meta_description" => "Déconnexion",
         ];
     }
+    public function profile(){
+        $user = $_SESSION['user'][0];
+        return [
+            "view" => VIEW_DIR . "forum/profile.php",
+            "data" => [
+                "user" => $user
+            ],
+            "meta_description" => "Page de profil"
+        ];
+    }
 }
+
+
