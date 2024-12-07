@@ -21,11 +21,19 @@ public function register() {
         $pass2 = filter_input(INPUT_POST, "pass2", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $role = 'ROLE_USER';
 
+        $regex = "/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-_@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/";
+
+
         //Si les entrées sont correctement remplies
         if ($nickName && $mail && $pass1 && $pass2) {
             $user = $registerManager->findUserByMail($mail);
     
             if (!$user) { 
+                if (!preg_match($regex, $pass1)) {
+                    $_SESSION['error'] = "Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.";
+                    header("Location: index.php?ctrl=security&action=register");
+                    exit;
+                }
                 if ($pass1 === $pass2 && strlen($pass1) >= 5) {
 
                     $userData = [

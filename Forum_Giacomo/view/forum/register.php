@@ -1,5 +1,6 @@
-<h1>S'inscrire !</h1>
-    <form method="POST">
+<div class="d-flex flex-column justify-content-center align-items-center ">
+    <h1>S'inscrire !</h1>
+    <form method="POST" class="d-flex flex-column justify-content-center align-items-center ">
         <label for="nickName">Pseudo</label>
         <input type="text" name="nickName" id="nickName"><br>
 
@@ -14,3 +15,4 @@
         
         <input type="submit" name ="submit" id="submit" value="S'enregistrer">
     </form>
+</div>
