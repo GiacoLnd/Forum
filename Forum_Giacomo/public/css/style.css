@@ -3,12 +3,13 @@
     padding: 0;
     box-sizing: border-box;
 }
-body {
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+#wrapper {
+    max-width: 1000px;
+    width: 100%;
 }
 h1 {
     color: rgb(0, 122, 156);
+}
+.text-justify {
+    text-align: justify;
 }

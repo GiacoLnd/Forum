@@ -165,7 +165,7 @@ class ForumController extends AbstractController implements ControllerInterface{
     $_SESSION['success'] = $topic->isLocked() ? "Le topic a été déverrouillé." : "Le topic a été verrouillé.";
 
     // Redirection après succès
-    header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=". $categoryId);
+    header("Location: index.php?ctrl0=forum&action=listTopicsByCategory&id=". $categoryId);
     exit;
 }
     }
