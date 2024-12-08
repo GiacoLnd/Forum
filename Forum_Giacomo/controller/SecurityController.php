@@ -18,7 +18,7 @@ public function register() {
         $nickName = filter_input(INPUT_POST, "nickName", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $mail = filter_input(INPUT_POST, "mail", FILTER_SANITIZE_EMAIL);
         $pass1 = filter_input(INPUT_POST, "pass1", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        $pass2 = filter_input(INPUT_POST, "pass2", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $pass2 = filter_input(INPUT_POST, "pass2", FILTER_DEFAULT);
         $role = 'ROLE_USER';
 
         $regex = "/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-_@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/";

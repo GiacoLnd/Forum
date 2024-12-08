@@ -64,11 +64,15 @@ class TopicManager extends Manager{
     }
     
     //fonction qui retourne l'id du user par son id de topic
-    public function getTopicCreator($id) {
+    public function getTopicCreator($id): ?int {
         $sql = "SELECT user_id 
-                FROM ".$this->tableName." t 
-                WHERE t.id_topic = :id_topic";
-        return DAO::select($sql, ['id_topic' => $id]);
+                FROM " . $this->tableName . " 
+                WHERE id_topic = :id_topic";
+    
+        $result = DAO::select($sql, ['id_topic' => $id], false);
+    
+        // Retourner l'ID ou null si aucun résultat
+        return $result ? (int) $result['user_id'] : null;
     }
     // fonction qui retourne l'id de la catégorie par son id de topic
     public function getTopicCategory($id) {

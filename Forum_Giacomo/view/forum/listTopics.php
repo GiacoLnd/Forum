@@ -21,13 +21,12 @@
             par <strong><?= $topic->getUser()->getNickName() ?></strong> le <?= $topic->getCreationDate() ?>
 
             <!-- Bouton Verrouiller/Déverrouiller -->
-            <?php if ($user->hasRole('ROLE_ADMIN') || $user->getId() === $topic->getUserId()): ?>
+            <?php if ($user->hasRole('ROLE_ADMIN') || $user->getId() === $topic->getUser()->getId())?>
                 <button>
                     <a href="index.php?ctrl=forum&action=toggleLock&id=<?= $topic->getId() ?>">
                         <?= $topic->isLocked() ? 'Déverrouiller' : 'Verrouiller' ?>
                     </a>
                 </button>
-            <?php endif; ?>
         </p>
     <?php endforeach; ?>
 </div>

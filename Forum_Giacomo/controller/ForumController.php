@@ -134,25 +134,21 @@ class ForumController extends AbstractController implements ControllerInterface{
  public function toggleLock(int $id) {
 
     $user = new User($_SESSION['user'][0]);
-    
+    $currentUserId = $_SESSION['user'][0]['id_user'];
+
     $topicManager = new TopicManager();
     $topic = $topicManager->findTopicById($id);
+    $creatorId = $topicManager->getTopicCreator($id);
     // var_dump($topic);die;
-    //récupère l'id de la catégorie
+
     
-    // Récupère les informations du topic
     $categoryManager = new CategoryManager();
     $category = $categoryManager->findOneById($id);
 
     $categoryId = $topicManager->getCategoryIdByTopicId($id);
     
-    if (!$topic) {
-        $_SESSION['error'] = "Le topic spécifié est introuvable.";
-        header("Location: index.php?ctrl=forum&action=listCategories");
-        exit;
-    }
     // Vérifie si l'utilisateur est autorisé à intéragir (admin ou créateur)
-    if (!$user->hasRole('ROLE_ADMIN') && $user->getId() !== $topic->getUserId()) {
+    if (!$user->hasRole('ROLE_ADMIN') && $currentUserId !== $creatorId) {
         $_SESSION['error'] = "Vous n'êtes pas autorisé à modifier ce topic.";
         header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=" . $categoryId);
         exit;
@@ -165,7 +161,7 @@ class ForumController extends AbstractController implements ControllerInterface{
     $_SESSION['success'] = $topic->isLocked() ? "Le topic a été déverrouillé." : "Le topic a été verrouillé.";
 
     // Redirection après succès
-    header("Location: index.php?ctrl0=forum&action=listTopicsByCategory&id=". $categoryId);
+    header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=". $categoryId);
     exit;
-}
     }
+}
