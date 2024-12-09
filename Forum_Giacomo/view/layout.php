@@ -11,52 +11,59 @@
         <link rel="stylesheet" href="<?= PUBLIC_DIR ?>/css/style.css">
         <title>FORUM</title>
     </head>
-    <body class="d-flex flex-column justify-content-center align-items-center">
+    <body class="d-flex flex-column justify-content-center align-items-center text-white ">
         <div id="wrapper"> 
             <div id="mainpage">
                 <!-- c'est ici que les messages (erreur ou succès) s'affichent-->
                 <h3 class="message" style="color: red"><?= App\Session::getFlash("error") ?></h3>
                 <h3 class="message" style="color: green"><?= App\Session::getFlash("success") ?></h3>
                 <header>
-                    <nav class="d-flex  justify-content-between align-items-center">
-                        <div id="nav-left">
-                            <a href="index.php?ctrl=home">Accueil</a>
-                            <?php
-                            // if(App\Session::isAdmin()){
-                                ?>
-                                <a href="index.php?ctrl=home&action=users">Voir la liste des gens</a>
-                            <?php 
-                        // } 
-                        ?>
-                        </div>
-                        <div id="nav-right">
-                        <?php
-                            // si l'utilisateur est connecté 
-                            if(App\Session::getUser()){
-                                ?>
-                                <a href="index.php?ctrl=security&action=profile"><span class="fas fa-user"></span>&nbsp;<?= App\Session::getUser()[0]['nickName']?></a>
-                                <a href="index.php?ctrl=security&action=logout">Déconnexion</a>
+                <div class="d-flex flex-column justify-content-center align-items-center">    
+                    <nav class="d-flex  justify-content-between gap-5">
+                            <div id="nav-left" class="custom-bg p-3 rounded-custom">
+                                <a href="index.php?ctrl=home" class="text-white text-decoration-none">Accueil</a>
+                                <a href="index.php?ctrl=forum&action=index" class="text-white text-decoration-none"  >Liste des catégories</a>
                                 <?php
-                            }
-                            else{
-                                ?>
-                                <a href="index.php?ctrl=security&action=login">Connexion</a>
-                                <a href="index.php?ctrl=security&action=register">Inscription</a>
-                                <a href="index.php?ctrl=forum&action=index">Liste des catégories</a>
+                                // if(App\Session::isAdmin()){
+                                    ?>
+                                    <a href="index.php?ctrl=home&action=users" class="text-white text-decoration-none">Voir la liste des gens</a>            
+
+                                <?php 
+                            // } 
+                            ?>
+                            </div>
+                            <div id="nav-right" class="custom-bg p-3 rounded-custom">
                             <?php
-                            }
-                        ?>
-                        </div>
-                    </nav>
+                                // si l'utilisateur est connecté 
+                                if(App\Session::getUser()){
+                                    ?>
+                                    <a href="index.php?ctrl=security&action=profile" class="text-white text-decoration-none"><span class="fas fa-user"></span>&nbsp;<?= App\Session::getUser()[0]['nickName']?></a>
+                                    <a href="index.php?ctrl=security&action=logout" class="text-white text-decoration-none">Déconnexion</a>
+                                    <?php
+                                }
+                                else{
+                                    ?>
+                                    <a href="index.php?ctrl=security&action=login" class="text-white text-decoration-none">Connexion</a>
+                                    <a href="index.php?ctrl=security&action=register" class="text-white text-decoration-none">Inscription</a>
+                                    <a href="index.php?ctrl=forum&action=index" class="text-white text-decoration-none">Liste des catégories</a>
+                                <?php
+                                }
+                            ?>
+                            </div>
+                        </nav>
+                    <a href="index.php?ctrl=home" > <img src="public/img/logo.png" id="logo" class="img-fluid" alt="logo"></a>
+                    </div>
                 </header>
                 
                 <main id="forum">
                     <?= $page ?>
                 </main>
             </div>
-            <footer class="d-flex flex-column justify-content-center align-items-center">
-                <p>&copy; <?= date_create("now")->format("Y") ?> - <a href="#">Règlement du forum</a> - <a href="#">Mentions légales</a></p>
-            </footer>
+            <div class="d-flex justify-content-center align-items-center">
+                <footer class="custom-bg rounded-custom d-inline-block text-center p-2">
+                    <p>&copy; <?= date_create("now")->format("Y") ?> - <a href="#" class="text-white text-decoration-none">Règlement du forum</a> - <a href="#" class="text-white text-decoration-none">Mentions légales</a></p>
+                </footer>
+            </div>
         </div>
         <script
             src="https://code.jquery.com/jquery-3.4.1.min.js"

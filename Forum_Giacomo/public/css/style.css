@@ -3,6 +3,16 @@
     padding: 0;
     box-sizing: border-box;
 }
+body{
+    background-image: url("../img/background.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0;
+}
+#logo{
+    max-width: 200px;
+}
 #wrapper {
     max-width: 1000px;
     width: 100%;
@@ -12,4 +22,11 @@ h1 {
 }
 .text-justify {
     text-align: justify;
+}
+.custom-bg {
+    background-color: #1D1B1B;
+    color: white;
+}
+.rounded-custom {
+    border-radius: 30px;
 }
