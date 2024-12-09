@@ -67,6 +67,8 @@ class ForumController extends AbstractController implements ControllerInterface{
         $topicManager = new TopicManager();
         $categoryManager = new CategoryManager();
         $category = $categoryManager->findOneById($id);
+        $user = Session::getUser();
+
         $addTopics = $topicManager->addTopic();
 
         return [
@@ -79,45 +81,35 @@ class ForumController extends AbstractController implements ControllerInterface{
         ];
     }
     //Fonction qui ajoute un post dans un topic
-    public function addPost($id): array {
-        $topicManager = new TopicManager();
+    public function addPost($topicId) {
         $postManager = new PostManager();
+        $topicManager = new TopicManager();
     
-        // Filtrage de l'ID en URL pour éviter sa manipulation par l'utilisateur
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        $topic = $topicManager->findTopicById($topicId);
     
-        if (!$id) {
-            $_SESSION['error'] = "ID de topic invalide ou manquant.";
-            header("Location: index.php?ctrl=forum&action=listCategories");
+        // Utilisation de  getUser pour récupérer l'utilisateur
+        $user = Session::getUser();
+
+        if (!$user || !isset($user[0]['id_user'])) {
+            $_SESSION['error'] = "Vous devez être connecté pour poster un message.";
+            header("Location: index.php?ctrl=security&action=login");
             exit;
         }
     
-        // récupération du topic par son ID
-        $topic = $topicManager->findTopicById($id);
-    
-        if (!$topic) {
-            $_SESSION['error'] = "Le topic spécifié est introuvable.";
-            header("Location: index.php?ctrl=forum&action=listCategories");
-            exit;
-        }
-    
+        // Si method POST dans Form
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     
             if (!$content) {
-                $_SESSION['error'] = "Le contenu du message est vide.";
-                header("Location: index.php?ctrl=forum&action=addPost&id=" . $id);
+                $_SESSION['error'] = "Le contenu du message est obligatoire.";
+                header("Location: index.php?ctrl=forum&action=listPostInTopic&id=" . $topicId);
                 exit;
             }
     
-            // Récupère la session du user 
-            $userId = $_SESSION['user'][0]['id_user'];
-    
-            // Appel de la méthode du manager pour ajouter le message
             $postManager->addPost([
                 'content' => $content,
-                'user_id' => $userId,
-                'topic_id' => $id
+                'user_id' => $user[0]['id_user'],
+                'topic_id' => $topicId
             ]);
         }
     

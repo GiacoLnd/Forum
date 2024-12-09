@@ -90,11 +90,23 @@ class TopicManager extends Manager{
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $title = filter_input(INPUT_POST, "title", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $content = filter_input(INPUT_POST, "content", FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        
-            $userId = $_SESSION['user'][0]['id_user']; // Récupération du id_user dans la session du user connecté
-        
-            $categoryId = intval($_GET['id']); // Récupère l'id de l'URL et force en int
-        
+    
+            $user = Session::getUser();
+
+            if (!$user || !isset($user[0]['id_user'])) {
+                $_SESSION['error'] = "Utilisateur introuvable ou non connecté.";
+                header("Location: index.php?ctrl=security&action=login");
+                exit;
+            }
+            $userId = $user[0]['id_user'];
+    
+            $categoryId = intval($_GET['id']);
+            if (!$categoryId) {
+                $_SESSION['error'] = "Catégorie invalide.";
+                header("Location: index.php?ctrl=forum&action=listCategories");
+                exit;
+            }
+    
             // Définition de la table cible -> topic
             $this->tableName = 'topic'; 
             $topicData = [
@@ -103,10 +115,15 @@ class TopicManager extends Manager{
                 'creationDate' => date('Y-m-d H:i:s'),
                 'category_id' => $categoryId
             ];
-        
-            // Insertion du topic et récupération de l'id du topic dans la variable $topicId
-            $topicId = $this->add($topicData); 
-        
+    
+            // Insertion du topic
+            $topicId = $this->add($topicData);
+            if (!$topicId) {
+                $_SESSION['error'] = "Échec de l'ajout du topic.";
+                header("Location: index.php?ctrl=forum&action=addTopicForm");
+                exit;
+            }
+    
             // Définition de la table cible -> post
             $this->tableName = 'post'; 
             $messageData = [
@@ -115,11 +132,15 @@ class TopicManager extends Manager{
                 'user_id' => $userId,
                 'datePost' => date('Y-m-d H:i:s')
             ];
-        
-            //ajoute le resultat de la requete SQL 
-            $this->add($messageData); 
-            
-
+    
+            // Ajout du premier message
+            if (!$this->add($messageData)) {
+                $_SESSION['error'] = "Échec de l'ajout du premier message.";
+                header("Location: index.php?ctrl=forum&action=addTopicForm");
+                exit;
+            }
+    
+            $_SESSION['success'] = "Topic ajouté avec succès.";
             header("Location: index.php?ctrl=forum&action=listTopicsByCategory&id=$categoryId");
             exit;
         }
