@@ -30,3 +30,15 @@ h1 {
 .rounded-custom {
     border-radius: 30px;
 }
+.nav-hover {
+    transition: color 0.3s ease, background-color 0.3s ease;
+    padding: 5px 10px; 
+    border-radius: 5px; 
+    color: white;
+}
+
+.nav-hover:hover, .nav-hover:focus {
+    color: #ffc107;
+    background-color: rgba(255, 255, 255, 0.2); 
+    text-decoration: none; 
+}

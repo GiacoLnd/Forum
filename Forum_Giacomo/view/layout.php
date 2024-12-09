@@ -11,47 +11,51 @@
         <link rel="stylesheet" href="<?= PUBLIC_DIR ?>/css/style.css">
         <title>FORUM</title>
     </head>
-    <body class="d-flex flex-column justify-content-center align-items-center text-white ">
+    <body class="d-flex flex-column justify-content-center align-items-center text-white p-3 ">
         <div id="wrapper"> 
             <div id="mainpage">
                 <!-- c'est ici que les messages (erreur ou succès) s'affichent-->
                 <h3 class="message" style="color: red"><?= App\Session::getFlash("error") ?></h3>
                 <h3 class="message" style="color: green"><?= App\Session::getFlash("success") ?></h3>
                 <header>
-                <div class="d-flex flex-column justify-content-center align-items-center">    
-                    <nav class="d-flex  justify-content-between gap-5">
-                            <div id="nav-left" class="custom-bg p-3 rounded-custom">
-                                <a href="index.php?ctrl=home" class="text-white text-decoration-none">Accueil</a>
-                                <a href="index.php?ctrl=forum&action=index" class="text-white text-decoration-none"  >Liste des catégories</a>
+                <div class="d-flex flex-column justify-content-center align-items-center mb-3"> 
+                    <a href="index.php?ctrl=home" > 
+                        <img src="public/img/logo.png" id="logo" class="img-fluid" alt="logo">
+                    </a>   
+
+                    <nav class="d-flex flex-column flex-lg-row align-items-center justify-content-center gap-3 mt-3">
+                            <div id="nav-left" class="custom-bg p-3 rounded-custom text-center fs-5 fw-bold d-flex flex-wrap justify-content-center gap-3">
+                                <a href="index.php?ctrl=home" class="text-decoration-none nav-hover">Accueil</a>
+                                <a href="index.php?ctrl=forum&action=index" class=" text-decoration-none nav-hover">Liste des catégories</a>
                                 <?php
                                 // if(App\Session::isAdmin()){
                                     ?>
-                                    <a href="index.php?ctrl=home&action=users" class="text-white text-decoration-none">Voir la liste des gens</a>            
+                                    <a href="index.php?ctrl=home&action=users" class=" text-decoration-none nav-hover">Voir la liste des gens</a>            
 
                                 <?php 
                             // } 
                             ?>
                             </div>
-                            <div id="nav-right" class="custom-bg p-3 rounded-custom">
+                            <div id="nav-right" class="custom-bg p-3 rounded-custom text-center fs-5 fw-bold d-flex flex-wrap justify-content-center gap-3">
                             <?php
                                 // si l'utilisateur est connecté 
                                 if(App\Session::getUser()){
                                     ?>
-                                    <a href="index.php?ctrl=security&action=profile" class="text-white text-decoration-none"><span class="fas fa-user"></span>&nbsp;<?= App\Session::getUser()[0]['nickName']?></a>
-                                    <a href="index.php?ctrl=security&action=logout" class="text-white text-decoration-none">Déconnexion</a>
+                                    <a href="index.php?ctrl=security&action=profile" class=" text-decoration-none nav-hover"><span class="fas fa-user"></span>&nbsp;<?= App\Session::getUser()[0]['nickName']?></a>
+                                    <a href="index.php?ctrl=security&action=logout" class=" text-decoration-none nav-hover">Déconnexion</a>
                                     <?php
                                 }
                                 else{
                                     ?>
-                                    <a href="index.php?ctrl=security&action=login" class="text-white text-decoration-none">Connexion</a>
-                                    <a href="index.php?ctrl=security&action=register" class="text-white text-decoration-none">Inscription</a>
-                                    <a href="index.php?ctrl=forum&action=index" class="text-white text-decoration-none">Liste des catégories</a>
+                                    <a href="index.php?ctrl=security&action=login" class="text-decoration-none nav-hover">Connexion</a>
+                                    <a href="index.php?ctrl=security&action=register" class="text-decoration-none nav-hover">Inscription</a>
+                                    <a href="index.php?ctrl=forum&action=index" class="text-decoration-none nav-hover">Liste des catégories</a>
                                 <?php
                                 }
                             ?>
                             </div>
                         </nav>
-                    <a href="index.php?ctrl=home" > <img src="public/img/logo.png" id="logo" class="img-fluid" alt="logo"></a>
+
                     </div>
                 </header>
                 
